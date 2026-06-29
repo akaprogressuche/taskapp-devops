@@ -1,0 +1,22 @@
+---
+# installs k3s agent on a worker node and joins it to the cluster
+
+- name: Check if k3s agent is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Get the node join token from the control plane
+  set_fact:
+    k3s_node_token: "{{ hostvars['k3s-master']['k3s_node_token'] }}"
+
+- name: Install k3s in agent mode and join the cluster
+  shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s_version }}" K3S_URL="https://{{ k3s_server_host }}:6443" K3S_TOKEN="{{ k3s_node_token }}" sh -
+  when: not k3s_binary.stat.exists
+
+- name: Enable and start k3s-agent service
+  systemd:
+    name: k3s-agent
+    enabled: true
+    state: started

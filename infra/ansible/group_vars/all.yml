@@ -1,0 +1,10 @@
+# Variables shared across all nodes
+
+k3s_version: "v1.30.2+k3s1"
+
+# The non-root user Ansible will create for SSH and administration
+admin_user: devops
+admin_group: sudo
+
+# workers need the control plane address to join the cluster
+k3s_server_host: "{{ hostvars['k3s-master']['ansible_host'] }}"

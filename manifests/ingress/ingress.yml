@@ -1,0 +1,35 @@
+# sslip.io embeds the IP in the domain name so Let's Encrypt can verify it.
+# Replace 32.195.87.181 with the control plane IP from terraform output.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: taskapp-ingress
+  namespace: taskapp
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - taskapp.32.195.87.181.sslip.io
+      secretName: taskapp-tls-cert
+
+  rules:
+    - host: taskapp.32.195.87.181.sslip.io
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80

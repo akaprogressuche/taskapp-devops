@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: taskapp
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:15.6
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  FILENAME="taskapp-$(date +%Y%m%d-%H%M%S).sql.gz"
+                  echo "Starting backup: $FILENAME"
+                  pg_dump -h "$DATABASE_HOST" -U "$DATABASE_USER" "$DATABASE_NAME" | gzip | \
+                    aws s3 cp - "s3://$BACKUP_BUCKET/postgres/$FILENAME"
+                  echo "Backup complete: $FILENAME"
+
+              env:
+                - name: DATABASE_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: taskapp-config
+                      key: DATABASE_HOST
+                - name: DATABASE_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: taskapp-config
+                      key: DATABASE_NAME
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: taskapp-secrets
+                      key: DATABASE_USER
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: taskapp-secrets
+                      key: DATABASE_PASSWORD
+                - name: BACKUP_BUCKET
+                  value: "capstone-phoenix-state-059771369098"
+
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "200m"
+                  memory: "256Mi"

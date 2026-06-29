@@ -1,0 +1,49 @@
+---
+# run this after the cluster is up to install nginx, cert-manager, Argo CD, and metrics-server
+
+- name: Install nginx ingress controller
+  command: >
+    kubectl apply -f
+    https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+  environment:
+    KUBECONFIG: "{{ playbook_dir }}/../../kubeconfig"
+
+- name: Install cert-manager (handles TLS certificates from Let's Encrypt)
+  command: >
+    kubectl apply -f
+    https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.yaml
+  environment:
+    KUBECONFIG: "{{ playbook_dir }}/../../kubeconfig"
+
+- name: Wait for cert-manager to be ready
+  command: >
+    kubectl rollout status deployment/cert-manager -n cert-manager --timeout=120s
+  environment:
+    KUBECONFIG: "{{ playbook_dir }}/../../kubeconfig"
+
+- name: Install Argo CD
+  block:
+    - name: Create argocd namespace
+      command: kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+      environment:
+        KUBECONFIG: "{{ playbook_dir }}/../../kubeconfig"
+
+    - name: Apply Argo CD manifests
+      command: >
+        kubectl apply -n argocd -f
+        https://raw.githubusercontent.com/argoproj/argo-cd/v2.11.0/manifests/install.yaml
+      environment:
+        KUBECONFIG: "{{ playbook_dir }}/../../kubeconfig"
+
+    - name: Wait for Argo CD server to be ready
+      command: >
+        kubectl rollout status deployment/argocd-server -n argocd --timeout=180s
+      environment:
+        KUBECONFIG: "{{ playbook_dir }}/../../kubeconfig"
+
+- name: Install metrics-server (needed for HPA to work)
+  command: >
+    kubectl apply -f
+    https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+  environment:
+    KUBECONFIG: "{{ playbook_dir }}/../../kubeconfig"

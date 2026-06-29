@@ -1,0 +1,42 @@
+# Helm values for the kube-prometheus-stack chart.
+# Argo CD applies these via gitops/apps/monitoring.yml
+
+grafana:
+  enabled: true
+  adminPassword: ""  # set via --set grafana.adminPassword=yourpassword at install time
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - grafana.32.195.87.181.sslip.io
+    tls:
+      - secretName: grafana-tls-cert
+        hosts:
+          - grafana.32.195.87.181.sslip.io
+
+  persistence:
+    enabled: true
+    size: 2Gi
+
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+alertmanager:
+  enabled: false
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true

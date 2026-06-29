@@ -1,0 +1,38 @@
+# These apply to every pod in the taskapp namespace.
+
+# LimitRange sets a default limit for containers that don't have their own.
+# This stops a runaway container from using all the memory on a node.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: taskapp-limits
+  namespace: taskapp
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+      max:
+        cpu: "2"
+        memory: "2Gi"
+
+---
+# ResourceQuota caps how much CPU and memory the whole namespace can use.
+# Without this one bad deploy could starve everything else on the cluster.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: taskapp-quota
+  namespace: taskapp
+spec:
+  hard:
+    pods: "20"
+    requests.cpu: "4"
+    requests.memory: "4Gi"
+    limits.cpu: "8"
+    limits.memory: "8Gi"
+    persistentvolumeclaims: "5"

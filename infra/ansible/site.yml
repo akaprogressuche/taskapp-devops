@@ -1,0 +1,21 @@
+---
+# Run this to set up the full cluster from scratch.
+# Usage: ansible-playbook -i inventory/hosts.yml site.yml
+
+- name: Harden all nodes
+  hosts: all
+  become: true
+  roles:
+    - base-hardening
+
+- name: Install k3s control plane
+  hosts: control_plane
+  become: true
+  roles:
+    - k3s-server
+
+- name: Join worker nodes to the cluster
+  hosts: workers
+  become: true
+  roles:
+    - k3s-agent

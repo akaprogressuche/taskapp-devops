@@ -1,0 +1,27 @@
+# Argo CD watches the manifests/ folder and syncs it to the cluster automatically.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: taskapp
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/akaprogressuche/capstone-phoenix
+    targetRevision: main
+    path: manifests
+    directory:
+      recurse: true
+      exclude: "{monitoring/*,ingress/issuer.yml}"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: taskapp
+
+  syncPolicy:
+    automated:
+      prune: true       # delete resources that are removed from git
+      selfHeal: true    # revert manual kubectl changes back to what git says
+    syncOptions:
+      - CreateNamespace=true

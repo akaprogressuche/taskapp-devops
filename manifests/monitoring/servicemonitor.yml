@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: taskapp-backend
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - taskapp
+  selector:
+    matchLabels:
+      app: taskapp-backend
+  endpoints:
+    - port: http
+      path: /api/health
+      interval: 30s
