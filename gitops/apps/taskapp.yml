@@ -13,7 +13,7 @@ spec:
     path: manifests
     directory:
       recurse: true
-      exclude: "{monitoring/*,ingress/issuer.yml}"
+      exclude: "{monitoring/*,ingress/issuer.yml,migrations/*}"
 
   destination:
     server: https://kubernetes.default.svc
