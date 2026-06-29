@@ -1,6 +1,6 @@
 Repository Structure
 
-capstone-phoenix/
+taskapp-devops/
   README.md                       this file's sibling - project overview
   STRUCTURE.md                    this file
   .gitignore                      keeps secrets, state files, and kubeconfig out of git
