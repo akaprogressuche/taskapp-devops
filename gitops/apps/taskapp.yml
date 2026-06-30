@@ -1,4 +1,4 @@
-# Argo CD watches the manifests/ folder and syncs it to the cluster automatically.
+# Argo CD app for taskapp
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

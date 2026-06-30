@@ -1,7 +1,4 @@
-# These apply to every pod in the taskapp namespace.
-
-# LimitRange sets a default limit for containers that don't have their own.
-# This stops a runaway container from using all the memory on a node.
+# LimitRange sets a default limit for containers that don't specify their own.
 apiVersion: v1
 kind: LimitRange
 metadata:

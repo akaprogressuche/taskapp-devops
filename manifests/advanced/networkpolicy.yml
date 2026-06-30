@@ -1,6 +1,3 @@
-# These network policies control which pods can talk to which other pods.
-# The first one blocks everything by default, then we add allow rules below.
-
 # 1. Deny all traffic in the taskapp namespace by default
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

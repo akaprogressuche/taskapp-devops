@@ -1,5 +1,4 @@
-# HPA watches the backend CPU. When average CPU goes above 70% it adds pods.
-# When the load drops it scales back down to the minimum.
+# scale up when CPU goes above 70%, back down when it drops
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
