@@ -14,5 +14,5 @@ spec:
       app: taskapp-backend
   endpoints:
     - port: http
-      path: /api/health
+      path: /metrics
       interval: 30s
