@@ -27,3 +27,5 @@ How to use it:
 The live app is at https://taskapp.32.195.87.181.sslip.io
 Grafana is at https://grafana.32.195.87.181.sslip.io
 Argo CD is at https://argocd.32.195.87.181.sslip.io
+Adding this new file here to test how argo CD picks the update to update cluster
+Adding this new file here to test how argo CD picks the update to update cluster
